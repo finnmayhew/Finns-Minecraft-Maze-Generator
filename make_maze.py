@@ -32,7 +32,7 @@ class Maze:
   def __init__(self, width, height):
     self.width = width
     self.height = height
-    self.maze = [['o' for i in range(width)] for j in range(height)]
+    self.maze = [['_' for i in range(width)] for j in range(height)]
   
   def draw(self):
     for row in self.maze:
@@ -48,13 +48,14 @@ class Maze:
       return value
   
   def setValue(self, point, value):
+    if (point.x == -1) or (point.y == -1): print("Cannot set value at", point, " (outside of maze)")
     try:
       self.maze[point.x][point.y] = value
     except:
       print("Cannot set value at", point, " (outside of maze)")
 
 
-# Code
+# Functions
 
 def makeSolutionPath(maze):
 
@@ -70,7 +71,7 @@ def makeSolutionPath(maze):
     for direction in directions:
       look = copy.deepcopy(head)
       look.move(direction)
-      if maze.getValue(look) == 'o':
+      if maze.getValue(look) == '_':
         possibleNextHeads.add(look)
     
     viableNextHeads = set()
