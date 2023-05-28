@@ -106,13 +106,16 @@ def generateRectangularMaze(width, height):
 
     head = random.choice(list(viableNextHeads))
     maze.setValue(head, air)
-    pastPathPoints.add(head)
+    if (head.x < maze.height - 4) and (head.y < maze.height - 4): pastPathPoints.add(head)
 
-    if head == maze.end: foundEnd = True
+    if head == maze.end:
+      foundEnd = True
+      head = random.choice(list(pastPathPoints))
   
   return maze, foundEnd
 
 def main():
+  print("------------------------------------------------")
   print("-- Welcome to Finn's Minecraft Maze Generator --")
   print("------------------------------------------------")
   while True:
