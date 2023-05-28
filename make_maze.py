@@ -54,11 +54,11 @@ class Maze:
       return value
   
   def setValue(self, point, value):
-    if (point.x == -1) or (point.y == -1): print("Cannot set value at", point, " (outside of maze)")
+    if (point.x == -1) or (point.y == -1): print("Cannot set value at", point, "(outside of maze)")
     try:
       self.maze[point.x][point.y] = value
     except:
-      print("Cannot set value at", point, " (outside of maze)")
+      print("Cannot set value at", point, "(outside of maze)")
 
 
 # Functions
