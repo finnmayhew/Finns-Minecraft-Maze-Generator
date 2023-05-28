@@ -3,7 +3,7 @@ import random
 
 # Config
 
-air = '☐'
+air  = '☐'
 wall = ' '
 
 
@@ -23,22 +23,17 @@ class Point:
     return f"({self.x}, {self.y})"
     
   def move(self, direction):
-    if direction == 'n':
-      self.x = self.x - 1
-    elif direction == 'e':
-      self.y = self.y + 1
-    elif direction == 's':
-      self.x = self.x + 1
-    elif direction == 'w':
-      self.y = self.y - 1
-    else:
-      raise Exception("Direction must be in {n, e, s, w}")
+    if   direction == 'n': self.x = self.x - 1
+    elif direction == 'e': self.y = self.y + 1
+    elif direction == 's': self.x = self.x + 1
+    elif direction == 'w': self.y = self.y - 1
+    else:                  raise Exception("Direction must be in {n, e, s, w}")
 
 class Maze:
   def __init__(self, width, height):
-    self.width = width
+    self.width  = width
     self.height = height
-    self.maze = [[wall for i in range(width)] for j in range(height)]
+    self.maze   = [[wall for i in range(width)] for j in range(height)]
   
   def draw(self):
     for row in self.maze:
@@ -46,19 +41,14 @@ class Maze:
 
   def getValue(self, point):
     if (point.x == -1) or (point.y == -1): return None
-    try:
-      value = self.maze[point.x][point.y]
-    except:
-      return None
-    else:
-      return value
+    try:    value = self.maze[point.x][point.y]
+    except: return None
+    else:   return value
   
   def setValue(self, point, value):
     if (point.x == -1) or (point.y == -1): print("Cannot set value at", point, "(outside of maze)")
-    try:
-      self.maze[point.x][point.y] = value
-    except:
-      print("Cannot set value at", point, "(outside of maze)")
+    try:    self.maze[point.x][point.y] = value
+    except: print("Cannot set value at", point, "(outside of maze)")
 
 
 # Functions
@@ -69,10 +59,9 @@ def generateRectangularMaze(width, height):
   maze = Maze(width,height)
 
   pastPathPoints = set()
-  foundEnd = False
 
   head = Point(0,0)
-  maze.setValue(head, '☐')
+  maze.setValue(head, air)
   pastPathPoints.add(head)
 
   while True:
