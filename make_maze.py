@@ -1,98 +1,105 @@
+import copy
 import random
+
+# Reference
+
+directions = {'n', 'e', 's', 'w'}
+
+
+# Classes
+
+class Point:
+  def __init__(self, x, y):
+    self.x = x
+    self.y = y
+
+  def __str__(self):
+    return f"({self.x}, {self.y})"
+    
+  def move(self, direction):
+    if direction == 'n':
+      self.x = self.x - 1
+    elif direction == 'e':
+      self.y = self.y + 1
+    elif direction == 's':
+      self.x = self.x + 1
+    elif direction == 'w':
+      self.y = self.y - 1
+    else:
+      raise Exception("Direction must be in {n, e, s, w}")
+
+class Maze:
+  def __init__(self, width, height):
+    self.width = width
+    self.height = height
+    self.maze = [['o' for i in range(width)] for j in range(height)]
+  
+  def draw(self):
+    for row in self.maze:
+      print(*row)
+
+  def getValue(self, point):
+    if (point.x == -1) or (point.y == -1): return None
+    try:
+      value = self.maze[point.x][point.y]
+    except:
+      return None
+    else:
+      return value
+  
+  def setValue(self, point, value):
+    try:
+      self.maze[point.x][point.y] = value
+    except:
+      print("Cannot set value at", point, " (outside of maze)")
+
+
+# Code
 
 def makeSolutionPath(maze):
 
   # Start at top left corner
-  head = [0,0]
-  maze[head[0]][head[1]] = 1
+  head = Point(0,0)
+  maze.setValue(head, 'p')
 
   # Walk until it gets to the end
-  step = 0
   while True:
-
     # Take one step
-    while True:
-      direction = random.randint(1,4)
-
-      tentativeHeadFound = False
-      if direction == 1:
-        if head[0] != 0:
-          tentativeHead = [head[0] - 1, head[1]]
-          tentativeHeadFound = True
-      if direction == 2:
-        if head[1] != len(maze[0]) - 1:
-          tentativeHead = [head[0], head[1] + 1]
-          tentativeHeadFound = True
-      if direction == 3:
-        if head[1] != len(maze) - 1:
-          tentativeHead = [head[0] + 1, head[1]]
-          tentativeHeadFound = True
-      if direction == 4:
-        if head[1] != 0:
-          tentativeHead = [head[0], head[1] - 1]
-          tentativeHeadFound = True
-      
-      if tentativeHeadFound:
-        if direction == 1:
-          if tentativeHead[0] != 0:
-            if (maze[tentativeHead[0] - 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0]][tentativeHead[1] + 1] == 0) and (maze[tentativeHead[0]][tentativeHead[1] - 1] == 0):
-              head = tentativeHead
-              break
-          else:
-            if (maze[tentativeHead[0]][tentativeHead[1] + 1] == 0) and (maze[tentativeHead[0]][tentativeHead[1] - 1] == 0):
-              head = tentativeHead
-              break
-        if direction == 2:
-          if tentativeHead[1] != len(maze[0]) - 1:
-            if (maze[tentativeHead[0] - 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0]][tentativeHead[1] + 1] == 0) and (maze[tentativeHead[0] + 1][tentativeHead[1]] == 0):
-              head = tentativeHead
-              break
-          else:
-            if (maze[tentativeHead[0] - 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0] + 1][tentativeHead[1]] == 0):
-              head = tentativeHead
-              break
-        if direction == 3:
-          if tentativeHead[1] != len(maze) - 1:
-            if (maze[tentativeHead[0]][tentativeHead[1] + 1] == 0) and (maze[tentativeHead[0] + 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0]][tentativeHead[1] - 1] == 0):
-              head = tentativeHead
-              break
-          else:
-            if (maze[tentativeHead[0]][tentativeHead[1] + 1] == 0) and (maze[tentativeHead[0]][tentativeHead[1] - 1] == 0):
-              head = tentativeHead
-              break
-        if direction == 4:
-          if tentativeHead[1] != 0:
-            if (maze[tentativeHead[0] - 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0] + 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0]][tentativeHead[1] - 1] == 0):
-              head = tentativeHead
-              break
-          else:
-            if (maze[tentativeHead[0] - 1][tentativeHead[1]] == 0) and (maze[tentativeHead[0] + 1][tentativeHead[1]] == 0):
-              head = tentativeHead
-              break
     
-    maze[head[0]][head[1]] = 1
-    step = step + 1
-
-    # print("took step",step)
-
-    if (head == [len(maze) - 1, len(maze[0]) - 1]) or (step == 50):
+    possibleNextHeads = set()
+    for direction in directions:
+      look = copy.deepcopy(head)
+      look.move(direction)
+      if maze.getValue(look) == 'o':
+        possibleNextHeads.add(look)
+    
+    viableNextHeads = set()
+    for possibleNextHead in possibleNextHeads:
+      numPathNear = 0
+      for direction in directions:
+        look2 = copy.deepcopy(possibleNextHead)
+        look2.move(direction)
+        if maze.getValue(look2) == 'p': numPathNear = numPathNear + 1
+      if numPathNear == 1: viableNextHeads.add(possibleNextHead)
+    
+    if len(viableNextHeads) == 0:
+      print("Ran into dead end, stopping")
       break
 
+    head = random.choice(list(viableNextHeads))
+    maze.setValue(head, 'p')
 
 def generateRectangularMaze(width, height):
   print("Generating maze...")
 
-  maze = [[0 for i in range(width)] for j in range(height)]
+  maze = Maze(width,height)
 
   makeSolutionPath(maze)
-
-  for row in maze:
-    print(*row)
+  maze.draw()
 
 def main():
   print("-- Welcome to Finn's Minecraft Maze Generator --")
   print("------------------------------------------------")
-  mazename = input("Name the maze: ")
   print("What type of maze should we generate?")
   mazetype = input("Options: square (s), rectangle (r): ")
   
