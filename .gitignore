@@ -2,3 +2,4 @@
 __pycache__/
 maze.txt
 maze.json
+run_maze.mcfunction

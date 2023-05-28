@@ -15,6 +15,11 @@ import random
 
 from classes import *
 
+def sendMazeToMinecraft():
+  with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/run_maze.mcfunction", 'w') as mazeFunctionFile:
+    encodedMaze = json.load(mazeFile)
+
+
 def generateRectangularMaze(width, height):
   maze = Maze(width,height)
 
@@ -99,5 +104,7 @@ def main():
 
   maze.draw()
   maze.encode()
+
+  sendMazeToMinecraft()
 
 if __name__ == "__main__": main()
