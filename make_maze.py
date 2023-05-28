@@ -20,8 +20,7 @@ directions = {'n', 'e', 's', 'w'}
 
 class Point:
   def __init__(self, x, y):
-    if (x < 0) or (y < 0):
-      raise Exception("Points must have non-negative coordinates")
+    if (x < 0) or (y < 0): raise Exception("Points must have non-negative coordinates")
     self.x = x
     self.y = y
 
@@ -29,11 +28,9 @@ class Point:
     if isinstance(other, self.__class__): return (self.x == other.x) and (self.y == other.y)
     return False
 
-  def __hash__(self):
-    return hash((self.x, self.y))
+  def __hash__(self): return hash((self.x, self.y))
 
-  def __str__(self):
-    return f"({self.x}, {self.y})"
+  def __str__(self): return f"({self.x}, {self.y})"
 
   def move(self, direction):
     if   direction == 'n': self.x = self.x - 1
@@ -133,8 +130,7 @@ def generateRectangularMaze(width, height):
     for direction in directions:
       look = copy.deepcopy(head)
       look.move(direction)
-      if maze.getValue(look) == wall:
-        possibleNextHeads.add(look)
+      if maze.getValue(look) == wall: possibleNextHeads.add(look)
 
     viableNextHeads = set()
     for possibleNextHead in possibleNextHeads:
@@ -161,43 +157,39 @@ def generateRectangularMaze(width, height):
   return maze, foundEnd
 
 def main():
-  print("------------------------------------------------")
-  print("-- Welcome to Finn's Minecraft Maze Generator --")
-  print("------------------------------------------------")
+  print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
+  print("| Welcome to Finn's Minecraft Maze Generator |")
+  print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
   while True:
-    print("What type of maze should we generate?")
-    mazetype = input("Options: square (s), rectangle (r): ")
+    mazetype = input("Type of maze (square: 's', rectangle 'r'): ")
     if (mazetype == "s"):
       width_str = input("Sidelength: ")
       while True:
-        try:
-          width  = abs(int(width_str))
-          height = width
-          break
+        try: width = abs(int(width_str))
         except:
           print("Sidelength must be an integer value")
           width_str = input("Sidelength: ")
+        else:
+          height = width
+          break
       break
     elif (mazetype == "r"):
-      width_str  = input("Width: ")
+      width_str = input("Width: ")
       while True:
-        try:
-          width = abs(int(width_str))
-          break
+        try: width = abs(int(width_str))
         except:
           print("Width must be an integer value")
           width_str = input("Width: ")
+        else: break
       height_str = input("Height: ")
       while True:
-        try:
-          height = abs(int(height_str))
-          break
+        try: height = abs(int(height_str))
         except:
           print("Height must be an integer value")
           height_str = input("Height: ")
+        else: break
       break
-    else:
-      print("Must put either 's' or 'r'")
+    else: print("Must put either 's' or 'r'")
 
   print("Generating maze...")
   while True:
@@ -207,5 +199,4 @@ def main():
   maze.draw()
   maze.encode()
 
-if __name__ == "__main__":
-  main()
+if __name__ == "__main__": main()
