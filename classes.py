@@ -1,8 +1,25 @@
+'''
+Class definitions
+
+Contains:
+- Point
+- Maze
+'''
+
 import json
 
 from config import *
 
 class Point:
+  '''
+  variables:
+  - x
+  - y
+  
+  methods:
+  - move(direction)
+  '''
+
   def __init__(self, x, y):
     if (x < 0) or (y < 0): raise Exception("Points must have non-negative coordinates")
     self.x = x
@@ -24,6 +41,21 @@ class Point:
     else:                  raise Exception("Direction must be in {n, e, s, w}")
 
 class Maze:
+  '''
+  variables:
+  - width
+  - height
+  - maze ([i/x/row][j/y/column])
+  - start
+  - end
+  - encodedMaze
+  
+  methods:
+  - getValue(point)
+  - setValue(point)
+  - draw()
+  - encode()
+  '''
   def __init__(self, width, height):
     self.width       = width
     self.height      = height

@@ -1,3 +1,16 @@
+'''
+Maze generation script
+
+Arguments are passed through command-line prompts
+
+For other configuration, see `config.py`
+
+TODO:
+
+- send maze to Minecraft datapack
+- add more maze types
+'''
+
 import copy
 import random
 

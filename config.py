@@ -1,3 +1,12 @@
+'''
+Non-command-line config options
+
+Contains:
+- tile characters for maze text file
+- maze density multiplier
+- list of possible directions within the maze
+'''
+
 air  = '█'
 wall = ' '
 edge = '░'
