@@ -1,6 +1,12 @@
 import copy
 import random
 
+# Config
+
+air = '☐'
+wall = ' '
+
+
 # Reference
 
 directions = {'n', 'e', 's', 'w'}
@@ -32,7 +38,7 @@ class Maze:
   def __init__(self, width, height):
     self.width = width
     self.height = height
-    self.maze = [['_' for i in range(width)] for j in range(height)]
+    self.maze = [[wall for i in range(width)] for j in range(height)]
   
   def draw(self):
     for row in self.maze:
@@ -57,24 +63,24 @@ class Maze:
 
 # Functions
 
-def makeSolutionPath(maze):
+def generateRectangularMaze(width, height):
+  print("Generating maze...")
+
+  maze = Maze(width,height)
 
   pastPathPoints = set()
+  foundEnd = False
 
-  # Start at top left corner
   head = Point(0,0)
-  maze.setValue(head, 'p')
+  maze.setValue(head, '☐')
   pastPathPoints.add(head)
 
-  # Walk until it gets to the end
   while True:
-    # Take one step
-    
     possibleNextHeads = set()
     for direction in directions:
       look = copy.deepcopy(head)
       look.move(direction)
-      if maze.getValue(look) == '_':
+      if maze.getValue(look) == wall:
         possibleNextHeads.add(look)
     
     viableNextHeads = set()
@@ -83,7 +89,7 @@ def makeSolutionPath(maze):
       for direction in directions:
         look2 = copy.deepcopy(possibleNextHead)
         look2.move(direction)
-        if maze.getValue(look2) == 'p': numPathNear = numPathNear + 1
+        if maze.getValue(look2) == air: numPathNear = numPathNear + 1
       if numPathNear == 1: viableNextHeads.add(possibleNextHead)
     
     if len(viableNextHeads) == 0:
@@ -91,17 +97,11 @@ def makeSolutionPath(maze):
       continue
 
     head = random.choice(list(viableNextHeads))
-    maze.setValue(head, 'p')
+    maze.setValue(head, air)
     pastPathPoints.add(head)
 
     if (head.x == maze.height - 1) and (head.y == maze.width - 1): break
 
-def generateRectangularMaze(width, height):
-  print("Generating maze...")
-
-  maze = Maze(width,height)
-
-  makeSolutionPath(maze)
   maze.draw()
 
 def main():
