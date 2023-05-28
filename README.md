@@ -6,9 +6,9 @@ Run
 python make_maze.py
 ```
 
-to generate a maze. Configuration and further instruction will appear in the shell.
+to generate a maze. Configuration and further instruction will appear in the shell. There are additional config options in `config.py`.
 
-The workflow of the code is:
+Once the maze is generated:
 
-- `make_maze.py` generates the maze and outputs it to `maze.txt` (will also output to `maze.zip` once I write that part of the code)
-- The user places `maze.zip` into a world datapack folder, then the datapack's code is run when the world is opened
+- Preview the maze at `maze/maze.txt`
+- (not yet available...) Play it in Minecraft by moving the folder `maze/mazeworld` into your world saves, then entering the world
