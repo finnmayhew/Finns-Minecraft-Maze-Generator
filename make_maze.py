@@ -56,8 +56,11 @@ class Maze:
         if (i == 0) or (i == width - 1): self.maze[j][i] = edge
 
   def draw(self):
-    for row in self.maze:
-      print(*row, sep='')
+    with open("maze/maze.txt", 'w') as mazeImageFile:
+      for row in self.maze:
+        for entry in row:
+          mazeImageFile.writelines(entry)
+        mazeImageFile.write('\n')
 
   def getValue(self, point):
     try:    value = self.maze[point.x][point.y]
