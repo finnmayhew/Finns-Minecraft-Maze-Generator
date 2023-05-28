@@ -3,8 +3,11 @@ import random
 
 # Config
 
-air  = '☐'
+air  = '█'
 wall = ' '
+edge = '░'
+
+density = 0.2 # any positive number
 
 
 # Reference
@@ -16,8 +19,17 @@ directions = {'n', 'e', 's', 'w'}
 
 class Point:
   def __init__(self, x, y):
+    if (x < 0) or (y < 0):
+      raise Exception("Points must have non-negative coordinates")
     self.x = x
     self.y = y
+
+  def __eq__(self, other):
+    if isinstance(other, self.__class__): return (self.x == other.x) and (self.y == other.y)
+    return False
+  
+  def __hash__(self):
+    return hash((self.x, self.y))
 
   def __str__(self):
     return f"({self.x}, {self.y})"
@@ -34,19 +46,25 @@ class Maze:
     self.width  = width
     self.height = height
     self.maze   = [[wall for i in range(width)] for j in range(height)]
-  
+    self.start  = Point(1, 1)
+    self.end    = Point(height - 2, width - 2)
+    
+    self.maze[0] = [edge for i in range(width)]
+    self.maze[height - 1] = [edge for i in range(width)]
+    for j in range(height):
+      for i in range(width):
+        if (i == 0) or (i == width - 1): self.maze[j][i] = edge
+
   def draw(self):
     for row in self.maze:
-      print(*row)
+      print(*row, sep='')
 
   def getValue(self, point):
-    if (point.x == -1) or (point.y == -1): return None
     try:    value = self.maze[point.x][point.y]
     except: return None
     else:   return value
-  
+
   def setValue(self, point, value):
-    if (point.x == -1) or (point.y == -1): print("Cannot set value at", point, "(outside of maze)")
     try:    self.maze[point.x][point.y] = value
     except: print("Cannot set value at", point, "(outside of maze)")
 
@@ -54,17 +72,17 @@ class Maze:
 # Functions
 
 def generateRectangularMaze(width, height):
-  print("Generating maze...")
-
   maze = Maze(width,height)
 
   pastPathPoints = set()
 
-  head = Point(0,0)
+  head = copy.deepcopy(maze.start)
   maze.setValue(head, air)
   pastPathPoints.add(head)
 
-  while True:
+  foundEnd = False
+  deadEndsHit = 0
+  while deadEndsHit < density*maze.width*maze.height:
     possibleNextHeads = set()
     for direction in directions:
       look = copy.deepcopy(head)
@@ -82,6 +100,7 @@ def generateRectangularMaze(width, height):
       if numPathNear == 1: viableNextHeads.add(possibleNextHead)
     
     if len(viableNextHeads) == 0:
+      deadEndsHit = deadEndsHit + 1
       head = random.choice(list(pastPathPoints))
       continue
 
@@ -89,9 +108,9 @@ def generateRectangularMaze(width, height):
     maze.setValue(head, air)
     pastPathPoints.add(head)
 
-    if (head.x == maze.height - 1) and (head.y == maze.width - 1): break
-
-  maze.draw()
+    if head == maze.end: foundEnd = True
+  
+  return maze, foundEnd
 
 def main():
   print("-- Welcome to Finn's Minecraft Maze Generator --")
@@ -131,7 +150,12 @@ def main():
     else:
       print("Must put either 's' or 'r'")
   
-  generateRectangularMaze(width=width, height=height)
+  print("Generating maze...")
+  while True:
+    maze, foundEnd = generateRectangularMaze(width=width, height=height)
+    if foundEnd: break
+  
+  maze.draw()
 
 if __name__ == "__main__":
   main()
