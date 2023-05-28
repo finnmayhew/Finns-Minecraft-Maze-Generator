@@ -103,7 +103,7 @@ def main():
       width_str = input("Sidelength: ")
       while True:
         try:
-          width = abs(int(width_str))
+          width  = abs(int(width_str))
           height = width
           break
         except:
