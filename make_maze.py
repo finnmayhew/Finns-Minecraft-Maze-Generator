@@ -59,9 +59,12 @@ class Maze:
 
 def makeSolutionPath(maze):
 
+  pastPathPoints = set()
+
   # Start at top left corner
   head = Point(0,0)
   maze.setValue(head, 'p')
+  pastPathPoints.add(head)
 
   # Walk until it gets to the end
   while True:
@@ -84,11 +87,14 @@ def makeSolutionPath(maze):
       if numPathNear == 1: viableNextHeads.add(possibleNextHead)
     
     if len(viableNextHeads) == 0:
-      print("Ran into dead end, stopping")
-      break
+      head = random.choice(list(pastPathPoints))
+      continue
 
     head = random.choice(list(viableNextHeads))
     maze.setValue(head, 'p')
+    pastPathPoints.add(head)
+
+    if (head.x == maze.height - 1) and (head.y == maze.width - 1): break
 
 def generateRectangularMaze(width, height):
   print("Generating maze...")
