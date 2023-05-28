@@ -205,6 +205,7 @@ def main():
     if foundEnd: break
 
   maze.draw()
+  maze.encode()
 
 if __name__ == "__main__":
   main()
