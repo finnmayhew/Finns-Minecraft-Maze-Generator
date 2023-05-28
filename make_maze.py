@@ -107,36 +107,40 @@ def generateRectangularMaze(width, height):
 def main():
   print("-- Welcome to Finn's Minecraft Maze Generator --")
   print("------------------------------------------------")
-  print("What type of maze should we generate?")
-  mazetype = input("Options: square (s), rectangle (r): ")
-  
-  if (mazetype == "s"):
-    width_str = input("Sidelength: ")
-    while True:
-      try:
-        width = abs(int(width_str))
-        height = width
-        break
-      except:
-        print("Sidelength must be an integer value")
-        width_str = input("Sidelength: ")
-  if (mazetype == "r"):
-    width_str  = input("Width: ")
-    while True:
-      try:
-        width = abs(int(width_str))
-        break
-      except:
-        print("Width must be an integer value")
-        width_str = input("Width: ")
-    height_str = input("Height: ")
-    while True:
-      try:
-        height = abs(int(height_str))
-        break
-      except:
-        print("Height must be an integer value")
-        height_str = input("Height: ")
+  while True:
+    print("What type of maze should we generate?")
+    mazetype = input("Options: square (s), rectangle (r): ")
+    if (mazetype == "s"):
+      width_str = input("Sidelength: ")
+      while True:
+        try:
+          width = abs(int(width_str))
+          height = width
+          break
+        except:
+          print("Sidelength must be an integer value")
+          width_str = input("Sidelength: ")
+      break
+    elif (mazetype == "r"):
+      width_str  = input("Width: ")
+      while True:
+        try:
+          width = abs(int(width_str))
+          break
+        except:
+          print("Width must be an integer value")
+          width_str = input("Width: ")
+      height_str = input("Height: ")
+      while True:
+        try:
+          height = abs(int(height_str))
+          break
+        except:
+          print("Height must be an integer value")
+          height_str = input("Height: ")
+      break
+    else:
+      print("Must put either 's' or 'r'")
   
   generateRectangularMaze(width=width, height=height)
 
