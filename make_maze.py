@@ -27,13 +27,13 @@ class Point:
   def __eq__(self, other):
     if isinstance(other, self.__class__): return (self.x == other.x) and (self.y == other.y)
     return False
-  
+
   def __hash__(self):
     return hash((self.x, self.y))
 
   def __str__(self):
     return f"({self.x}, {self.y})"
-    
+
   def move(self, direction):
     if   direction == 'n': self.x = self.x - 1
     elif direction == 'e': self.y = self.y + 1
@@ -48,7 +48,7 @@ class Maze:
     self.maze   = [[wall for i in range(width)] for j in range(height)]
     self.start  = Point(1, 1)
     self.end    = Point(height - 2, width - 2)
-    
+
     self.maze[0] = [edge for i in range(width)]
     self.maze[height - 1] = [edge for i in range(width)]
     for j in range(height):
@@ -92,7 +92,7 @@ def generateRectangularMaze(width, height):
       look.move(direction)
       if maze.getValue(look) == wall:
         possibleNextHeads.add(look)
-    
+
     viableNextHeads = set()
     for possibleNextHead in possibleNextHeads:
       numPathNear = 0
@@ -101,7 +101,7 @@ def generateRectangularMaze(width, height):
         look2.move(direction)
         if maze.getValue(look2) == air: numPathNear = numPathNear + 1
       if numPathNear == 1: viableNextHeads.add(possibleNextHead)
-    
+
     if len(viableNextHeads) == 0:
       deadEndsHit = deadEndsHit + 1
       head = random.choice(list(pastPathPoints))
@@ -114,7 +114,7 @@ def generateRectangularMaze(width, height):
     if head == maze.end:
       foundEnd = True
       head = random.choice(list(pastPathPoints))
-  
+
   return maze, foundEnd
 
 def main():
@@ -155,12 +155,12 @@ def main():
       break
     else:
       print("Must put either 's' or 'r'")
-  
+
   print("Generating maze...")
   while True:
     maze, foundEnd = generateRectangularMaze(width=width, height=height)
     if foundEnd: break
-  
+
   maze.draw()
 
 if __name__ == "__main__":
