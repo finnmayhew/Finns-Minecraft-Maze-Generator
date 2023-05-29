@@ -1,5 +1,7 @@
 # Finn's Minecraft Maze Generator
 
+## How to run
+
 Run
 
 ```bash
@@ -12,3 +14,8 @@ Once the maze is generated:
 
 - Play it in Minecraft by moving the folder `maze/mazeworld` into your world saves, then entering the world
 - Preview the maze at `maze/maze.txt`
+
+## To do
+
+- fix holes in Minecraft maze
+- add more maze types

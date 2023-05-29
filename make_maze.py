@@ -4,10 +4,6 @@ Maze generation script
 Arguments are passed through command-line prompts
 
 For other configuration, see `config.py`
-
-TODO:
-- fix holes in Minecraft maze
-- add more maze types
 '''
 
 import copy
