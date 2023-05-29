@@ -8,6 +8,7 @@ For other configuration, see `config.py`
 
 import copy
 import random
+from math import ceil
 
 from classes import *
 
@@ -15,16 +16,21 @@ def sendMazeToMinecraft():
   with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
     encodedMaze = json.load(mazeFile)
     mazeFunctionFile.write("scoreboard players add #maze spawntimer 1\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
-    mazeFunctionFile.write("forceload add ")
-    mazeFunctionFile.write("0 0 ")
-    mazeFunctionFile.write(str(encodedMaze["width"]*16))
-    mazeFunctionFile.write(" ")
-    mazeFunctionFile.write(str(encodedMaze["height"]*16))
-    mazeFunctionFile.write("\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
+    for xMegaChunk in range(1, ceil(encodedMaze["width"]/16) + 1):
+      for zMegaChunk in range(1, ceil(encodedMaze["height"]/16) + 1):
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
+        mazeFunctionFile.write("forceload add ")
+        mazeFunctionFile.write(str((xMegaChunk - 1)*256))
+        mazeFunctionFile.write(" ")
+        mazeFunctionFile.write(str((zMegaChunk - 1)*256))
+        mazeFunctionFile.write(" ")
+        mazeFunctionFile.write(str(xMegaChunk*256 - 1))
+        mazeFunctionFile.write(" ")
+        mazeFunctionFile.write(str(zMegaChunk*256 - 1))
+        mazeFunctionFile.write("\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 2 run ")
     mazeFunctionFile.write("spawnpoint @a 23 1 23 -45\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 2 run ")
     mazeFunctionFile.write("tp @a 23 1 23 -45 0\n")
     
     for room in encodedMaze["rooms"]:
