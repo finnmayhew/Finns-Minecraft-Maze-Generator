@@ -16,9 +16,10 @@ import random
 from classes import *
 
 def sendMazeToMinecraft():
-  with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/run_maze.mcfunction", 'w') as mazeFunctionFile:
+  with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
     encodedMaze = json.load(mazeFile)
-
+    mazeFunctionFile.write("scoreboard players add #maze spawntimer 1")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run scoreboard players set #maze spawncomplete 1")
 
 def generateRectangularMaze(width, height):
   maze = Maze(width,height)
