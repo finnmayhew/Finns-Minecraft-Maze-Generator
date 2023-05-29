@@ -6,7 +6,7 @@ Arguments are passed through command-line prompts
 For other configuration, see `config.py`
 
 TODO:
-- send maze to Minecraft datapack
+- fix holes in Minecraft maze
 - add more maze types
 '''
 
