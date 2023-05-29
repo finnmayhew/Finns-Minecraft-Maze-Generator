@@ -88,7 +88,9 @@ class Maze:
 
   def encode(self):
     self.encodedMaze = {
-      "rooms": []
+      "width":  self.width,
+      "height": self.height,
+      "rooms":  []
     }
     for i in range(self.height):
       for j in range(self.width):
