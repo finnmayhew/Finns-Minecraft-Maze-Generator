@@ -17,5 +17,6 @@ Once the maze is generated:
 
 ## To do
 
-- fix holes in Minecraft maze
+- build rooms
+- customize generation algorithm
 - add more maze types
