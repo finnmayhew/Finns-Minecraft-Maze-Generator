@@ -15,9 +15,16 @@ def sendMazeToMinecraft():
   with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
     encodedMaze = json.load(mazeFile)
     mazeFunctionFile.write("scoreboard players add #maze spawntimer 1\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run ")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
+    mazeFunctionFile.write("forceload add ")
+    mazeFunctionFile.write("0 0 ")
+    mazeFunctionFile.write(str(encodedMaze["width"]*16))
+    mazeFunctionFile.write(" ")
+    mazeFunctionFile.write(str(encodedMaze["height"]*16))
+    mazeFunctionFile.write("\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
     mazeFunctionFile.write("spawnpoint @a 23 1 23 -45\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run ")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
     mazeFunctionFile.write("tp @a 23 1 23 -45 0\n")
     
     for room in encodedMaze["rooms"]:
@@ -49,7 +56,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write("\n")
       elif room["type"] == "end":
         if   room["orientation"] == 1:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 6 run ")
           mazeFunctionFile.write("place template maze:end1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -57,21 +64,21 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write("\n")
         else: # (8)
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 6 run ")
           mazeFunctionFile.write("place template maze:end1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write(" counterclockwise_90\n")
       elif room["type"] == "edge":
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 7 run ")
         mazeFunctionFile.write("place template maze:edge ")
         mazeFunctionFile.write(str(x))
         mazeFunctionFile.write(" 0 ")
         mazeFunctionFile.write(str(z))
         mazeFunctionFile.write("\n")
       elif room["type"] == "wall":
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 8 run ")
         mazeFunctionFile.write("place template maze:wall ")
         mazeFunctionFile.write(str(x))
         mazeFunctionFile.write(" 0 ")
@@ -79,7 +86,7 @@ def sendMazeToMinecraft():
         mazeFunctionFile.write("\n")
       elif room["type"] == "deadend":
         if   room["orientation"] == 1:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run ")
           mazeFunctionFile.write("place template maze:deadend1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -87,7 +94,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write("\n")
         elif room["orientation"] == 2:
           x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run ")
           mazeFunctionFile.write("place template maze:deadend1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -96,7 +103,7 @@ def sendMazeToMinecraft():
         elif room["orientation"] == 4:
           x = x + 15
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run ")
           mazeFunctionFile.write("place template maze:deadend1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -104,7 +111,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(" 180\n")
         else: # (8)
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run ")
           mazeFunctionFile.write("place template maze:deadend1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -112,7 +119,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(" counterclockwise_90\n")
       elif room["type"] == "turn":
         if   room["orientation"] == 3:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run ")
           mazeFunctionFile.write("place template maze:turn3 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -120,7 +127,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write("\n")
         elif room["orientation"] == 6:
           x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run ")
           mazeFunctionFile.write("place template maze:turn3 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -128,7 +135,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(" clockwise_90\n")
         elif room["orientation"] == 9:
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run ")
           mazeFunctionFile.write("place template maze:turn3 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -137,7 +144,7 @@ def sendMazeToMinecraft():
         else: # (12)
           x = x + 15
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run ")
           mazeFunctionFile.write("place template maze:turn3 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -145,7 +152,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(" 180\n")
       elif room["type"] == "hall":
         if   room["orientation"] == 5:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 11 run ")
           mazeFunctionFile.write("place template maze:hall5 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -153,7 +160,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write("\n")
         else: # (10)
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 11 run ")
           mazeFunctionFile.write("place template maze:hall5 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -161,7 +168,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(" counterclockwise_90\n")
       elif room["type"] == "tee":
         if   room["orientation"] == 7:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run ")
           mazeFunctionFile.write("place template maze:tee7 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -169,7 +176,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write("\n")
         elif room["orientation"] == 11:
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run ")
           mazeFunctionFile.write("place template maze:tee7 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -178,7 +185,7 @@ def sendMazeToMinecraft():
         elif room["orientation"] == 13:
           x = x + 15
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run ")
           mazeFunctionFile.write("place template maze:tee7 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
@@ -186,20 +193,21 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(" 180\n")
         else: # (14)
           x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run ")
           mazeFunctionFile.write("place template maze:tee7 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write(" clockwise_90\n")
       else: # (cross)
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 13 run ")
         mazeFunctionFile.write("place template maze:cross ")
         mazeFunctionFile.write(str(x))
         mazeFunctionFile.write(" 0 ")
         mazeFunctionFile.write(str(z))
         mazeFunctionFile.write("\n")
     
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run forceload remove all\n")
     mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run ")
     mazeFunctionFile.write("scoreboard players set #maze spawncomplete 1\n")
 
