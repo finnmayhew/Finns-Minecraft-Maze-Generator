@@ -18,8 +18,194 @@ from classes import *
 def sendMazeToMinecraft():
   with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
     encodedMaze = json.load(mazeFile)
-    mazeFunctionFile.write("scoreboard players add #maze spawntimer 1")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run scoreboard players set #maze spawncomplete 1")
+    mazeFunctionFile.write("scoreboard players add #maze spawntimer 1\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run ")
+    mazeFunctionFile.write("spawnpoint @a 23 1 23 -45\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run ")
+    mazeFunctionFile.write("tp @a 23 1 23 -45 0\n")
+    
+    for room in encodedMaze["rooms"]:
+      x = room["y"]*16
+      z = room["x"]*16
+
+      if   room["type"] == "start":
+        if   room["orientation"] == 2:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:start2 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        elif room["orientation"] == 4:
+          x = x + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:start2 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" clockwise_90\n")
+        else: # (6)
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:start6 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+      elif room["type"] == "end":
+        if   room["orientation"] == 1:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:end1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        else: # (8)
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:end1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" counterclockwise_90\n")
+      elif room["type"] == "edge":
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+        mazeFunctionFile.write("place template maze:edge ")
+        mazeFunctionFile.write(str(x))
+        mazeFunctionFile.write(" 0 ")
+        mazeFunctionFile.write(str(z))
+        mazeFunctionFile.write("\n")
+      elif room["type"] == "wall":
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+        mazeFunctionFile.write("place template maze:wall ")
+        mazeFunctionFile.write(str(x))
+        mazeFunctionFile.write(" 0 ")
+        mazeFunctionFile.write(str(z))
+        mazeFunctionFile.write("\n")
+      elif room["type"] == "deadend":
+        if   room["orientation"] == 1:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:deadend1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        elif room["orientation"] == 2:
+          x = x + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:deadend1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" clockwise_90\n")
+        elif room["orientation"] == 4:
+          x = x + 15
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:deadend1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" 180\n")
+        else: # (8)
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:deadend1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" counterclockwise_90\n")
+      elif room["type"] == "turn":
+        if   room["orientation"] == 3:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:turn3 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        elif room["orientation"] == 6:
+          x = x + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:turn3 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" clockwise_90\n")
+        elif room["orientation"] == 9:
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:turn3 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" counterclockwise_90\n")
+        else: # (12)
+          x = x + 15
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:turn3 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" 180\n")
+      elif room["type"] == "hall":
+        if   room["orientation"] == 5:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:hall5 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        else: # (10)
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:hall5 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" counterclockwise_90\n")
+      elif room["type"] == "tee":
+        if   room["orientation"] == 7:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:tee7 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        elif room["orientation"] == 11:
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:tee7 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" clockwise_90\n")
+        elif room["orientation"] == 13:
+          x = x + 15
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:tee7 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" 180\n")
+        else: # (14)
+          x = x + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+          mazeFunctionFile.write("place template maze:tee7 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" clockwise_90\n")
+      else: # (cross)
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
+        mazeFunctionFile.write("place template maze:cross ")
+        mazeFunctionFile.write(str(x))
+        mazeFunctionFile.write(" 0 ")
+        mazeFunctionFile.write(str(z))
+        mazeFunctionFile.write("\n")
+    
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run ")
+    mazeFunctionFile.write("scoreboard players set #maze spawncomplete 1\n")
 
 def generateRectangularMaze(width, height):
   maze = Maze(width,height)
@@ -105,7 +291,10 @@ def main():
 
   maze.draw()
   maze.encode()
-
   sendMazeToMinecraft()
+
+  print("Done")
+  print("Copy the mazeworld folder from inside the maze folder to your Minecraft world saves, then enter the world to play.")
+  print("You can also preview the maze by looking at maze.txt in the maze folder.")
 
 if __name__ == "__main__": main()

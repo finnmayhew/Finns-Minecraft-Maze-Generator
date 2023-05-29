@@ -115,14 +115,14 @@ class Maze:
           elif nearbyAir == 2:
             if   (self.maze[i-1][j] == air) and (self.maze[i][j+1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=3))
             elif (self.maze[i+1][j] == air) and (self.maze[i][j+1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=6))
-            elif (self.maze[i+1][j] == air) and (self.maze[i][j-1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=12))
             elif (self.maze[i-1][j] == air) and (self.maze[i][j-1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=9))
+            elif (self.maze[i+1][j] == air) and (self.maze[i][j-1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=12))
             elif (self.maze[i-1][j] == air) and (self.maze[i+1][j] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="hall",    orientation=5))
             else:                                                            self.encodedMaze["rooms"].append(dict(x=i, y=j, type="hall",    orientation=10))
           elif nearbyAir == 3:
-            if   (self.maze[i-1][j] == wall) or (self.maze[i-1][j] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=14))
-            elif (self.maze[i][j+1] == wall) or (self.maze[i][j+1] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=13))
+            if   (self.maze[i][j-1] == wall) or (self.maze[i][j-1] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=7))
             elif (self.maze[i+1][j] == wall) or (self.maze[i+1][j] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=11))
-            elif (self.maze[i][j-1] == wall) or (self.maze[i][j-1] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=7))
+            elif (self.maze[i][j+1] == wall) or (self.maze[i][j+1] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=13))
+            else:                                                            self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=14))
           else:                                                              self.encodedMaze["rooms"].append(dict(x=i, y=j, type="cross",   orientation=15))
     with open("maze/maze.json", 'w') as mazeJsonFile: json.dump(self.encodedMaze,mazeJsonFile)
