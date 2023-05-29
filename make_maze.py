@@ -181,7 +181,7 @@ def sendMazeToMinecraft():
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" clockwise_90\n")
+          mazeFunctionFile.write(" counterclockwise_90\n")
         elif room["orientation"] == 13:
           x = x + 15
           z = z + 15
