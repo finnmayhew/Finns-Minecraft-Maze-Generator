@@ -210,11 +210,11 @@ def sendMazeToMinecraft():
         mazeFunctionFile.write("\n")
     
     mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run forceload remove all\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 19 run ")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 39 run ")
     mazeFunctionFile.write("spawnpoint @a 23 1 23 -45\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 19 run ")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 39 run ")
     mazeFunctionFile.write("tp @a 23 1 23 -45 0\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run ")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 40 run ")
     mazeFunctionFile.write("scoreboard players set #maze spawncomplete 1\n")
 
 def generateRectangularMaze(width, height):
