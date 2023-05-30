@@ -28,10 +28,6 @@ def sendMazeToMinecraft():
         mazeFunctionFile.write(" ")
         mazeFunctionFile.write(str(zMegaChunk*256 - 1))
         mazeFunctionFile.write("\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 2 run ")
-    mazeFunctionFile.write("spawnpoint @a 23 1 23 -45\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 2 run ")
-    mazeFunctionFile.write("tp @a 23 1 23 -45 0\n")
     
     for room in encodedMaze["rooms"]:
       x = room["y"]*16
@@ -214,6 +210,10 @@ def sendMazeToMinecraft():
         mazeFunctionFile.write("\n")
     
     mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run forceload remove all\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 19 run ")
+    mazeFunctionFile.write("spawnpoint @a 23 1 23 -45\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 19 run ")
+    mazeFunctionFile.write("tp @a 23 1 23 -45 0\n")
     mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run ")
     mazeFunctionFile.write("scoreboard players set #maze spawncomplete 1\n")
 
