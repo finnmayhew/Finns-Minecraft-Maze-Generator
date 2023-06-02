@@ -34,8 +34,6 @@ def sendMazeToMinecraft():
       z = room["x"]*16
 
       variant = random.choices(list(roomVariants.keys()),list(roomVariants.values()))[0]
-      print("variant: ")
-      print(variant)
 
       if   room["type"] == "start":
         if   room["orientation"] == 2:
