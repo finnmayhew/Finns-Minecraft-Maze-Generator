@@ -4,6 +4,7 @@ Non-command-line config options
 Contains:
 - tile characters for maze text file
 - maze density multiplier
+- room variant weights
 - list of possible directions within the maze
 '''
 
@@ -12,9 +13,9 @@ wall = ' '
 edge = '░'
 
 density = 0.2 # any positive number
-
-directions = {'n', 'e', 's', 'w'}
 roomVariants = {
-    "normal": 15,
+    "normal": 17,
     "chest":  1
 }
+
+directions = {'n', 'e', 's', 'w'}
