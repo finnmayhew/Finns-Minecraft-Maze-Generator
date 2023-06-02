@@ -15,8 +15,4 @@ Once the maze is generated:
 - Play it in Minecraft by moving the folder `maze/mazeworld` into your world saves, then entering the world
 - Preview the maze at `maze/maze.txt`
 
-## To do
-
-- build rooms
-- customize generation algorithm
-- add more maze types
+This will eventually be a PvP minigame. The mechanics for that are not yet implemented, right now this only generates the maze.
