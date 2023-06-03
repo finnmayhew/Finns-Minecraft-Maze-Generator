@@ -16,10 +16,11 @@ def sendMazeToMinecraft():
   with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
     encodedMaze = json.load(mazeFile)
     mazeFunctionFile.write("scoreboard players add #maze spawntimer 1\n")
+    mazeFunctionFile.write("gamemode adventure @a\n")
+    mazeFunctionFile.write("spawnpoint @a 23 100 12\n")
     for xMegaChunk in range(1, ceil(encodedMaze["width"]/16) + 1):
       for zMegaChunk in range(1, ceil(encodedMaze["height"]/16) + 1):
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 1 run ")
-        mazeFunctionFile.write("forceload add ")
+        mazeFunctionFile.write("execute if score #maze spawntimer matches 2 run forceload add ")
         mazeFunctionFile.write(str((xMegaChunk - 1)*256))
         mazeFunctionFile.write(" ")
         mazeFunctionFile.write(str((zMegaChunk - 1)*256))
@@ -37,8 +38,7 @@ def sendMazeToMinecraft():
 
       if   room["type"] == "start":
         if   room["orientation"] == 2:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run ")
-          mazeFunctionFile.write("place template maze:start2 ")
+          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run place template maze:start2 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
@@ -221,12 +221,11 @@ def sendMazeToMinecraft():
         mazeFunctionFile.write("\n")
     
     mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run forceload remove all\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 39 run ")
-    mazeFunctionFile.write("spawnpoint @a 23 6 23 -45\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 39 run ")
-    mazeFunctionFile.write("tp @a 23 6 23 -45 0\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 40 run ")
-    mazeFunctionFile.write("scoreboard players set #maze spawncomplete 1\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run kill @e[name=\"Loading...\"]\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run summon minecraft:armor_stand 24.0 101.25 20.0 {CustomName:'[{\"text\":\"Enter the maze\",\"color\":\"green\"}]',CustomNameVisible:1,Invisible:1,Marker:1,NoGravity:1}\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run fill 23 100 20 24 100 20 air\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run tellraw @a \"Maze loaded, enter when all players have joined\"\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run scoreboard players set #maze gamephase 1\n")
 
 def generateRectangularMaze(width, height):
   maze = Maze(width,height)
