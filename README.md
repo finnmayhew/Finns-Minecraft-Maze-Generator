@@ -1,4 +1,4 @@
-# Finn's Minecraft PvP Maze Minigame (v1.0)
+# Finn's Minecraft PvP Maze Minigame
 
 ## How to use
 
