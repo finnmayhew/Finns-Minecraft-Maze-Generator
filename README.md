@@ -12,7 +12,7 @@ python make_maze.py
 
 The shell will prompt you to specify the maze size in rooms. Each room is one chunk (16 by 16 blocks).
 
-Once the maze is generated, move the folder `maze/mazeworld` into your Minecraft world saves. When you log into the world, the maze will generate. There's a lobby area you can wait in while this happens and while other people are connecting to your server.
+Once the maze is generated, move the folder `maze/mazeworld` to your server folder. When you start the server, the maze will generate. Wait in the lobby until everyone has joined.
 
 ## Gameplay
 
