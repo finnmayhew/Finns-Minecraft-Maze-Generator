@@ -6,315 +6,673 @@ Arguments are passed through command-line prompts
 For other configuration, see `config.py`
 '''
 
-import copy
 import random
 from math import ceil
 
 from classes import *
+from config import *
 
-def sendMazeToMinecraft():
-  with open("maze/maze.json") as mazeFile, open("maze/mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
-    encodedMaze = json.load(mazeFile)
+def sendMazeToMinecraft(maze):
+  with open("mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
     mazeFunctionFile.write("scoreboard players add #maze spawntimer 1\n")
     mazeFunctionFile.write("gamemode adventure @a\n")
-    mazeFunctionFile.write("spawnpoint @a 23 100 12\n")
-    for xMegaChunk in range(1, ceil(encodedMaze["width"]/16) + 1):
-      for zMegaChunk in range(1, ceil(encodedMaze["height"]/16) + 1):
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 2 run forceload add ")
-        mazeFunctionFile.write(str((xMegaChunk - 1)*256))
-        mazeFunctionFile.write(" ")
-        mazeFunctionFile.write(str((zMegaChunk - 1)*256))
-        mazeFunctionFile.write(" ")
-        mazeFunctionFile.write(str(xMegaChunk*256 - 1))
-        mazeFunctionFile.write(" ")
-        mazeFunctionFile.write(str(zMegaChunk*256 - 1))
-        mazeFunctionFile.write("\n")
+    mazeFunctionFile.write("spawnpoint @a 7 100 -4\n")
     
-    for room in encodedMaze["rooms"]:
-      x = room["y"]*16
-      z = room["x"]*16
+    tick = 1
+    for room in maze.getRooms():
+      x = room.position["xChunk"]*16
+      z = room.position["zChunk"]*16
+      type = room.getType()
 
-      variant = random.choices(list(roomVariants.keys()),list(roomVariants.values()))[0]
-
-      if   room["type"] == "start":
-        if   room["orientation"] == 2:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run place template maze:start2 ")
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write("\n")
-        elif room["orientation"] == 4:
-          x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run place template maze:start2 ")
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" clockwise_90\n")
-        else: # (6)
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 5 run place template maze:start6 ")
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write("\n")
-      elif room["type"] == "end":
-        if   room["orientation"] == 1:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 6 run place template maze:end1 ")
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write("\n")
-        else: # (8)
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 6 run place template maze:end1 ")
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" counterclockwise_90\n")
-      elif room["type"] == "edge":
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 7 run place template maze:edge ")
+      if   type == "start":
+        mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+        mazeFunctionFile.write(str(tick))
+        mazeFunctionFile.write(" run forceload add ")
+        mazeFunctionFile.write(str(x))
+        mazeFunctionFile.write(" ")
+        mazeFunctionFile.write(str(z))
+        mazeFunctionFile.write("\n")
+        tick = tick + 1
+        mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+        mazeFunctionFile.write(str(tick))
+        mazeFunctionFile.write(" run place template maze:start ")
         mazeFunctionFile.write(str(x))
         mazeFunctionFile.write(" 0 ")
         mazeFunctionFile.write(str(z))
         mazeFunctionFile.write("\n")
-      elif room["type"] == "wall":
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 8 run place template maze:wall ")
+        tick = tick + 1
+        mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+        mazeFunctionFile.write(str(tick))
+        mazeFunctionFile.write(" run forceload remove ")
         mazeFunctionFile.write(str(x))
-        mazeFunctionFile.write(" 0 ")
+        mazeFunctionFile.write(" ")
         mazeFunctionFile.write(str(z))
         mazeFunctionFile.write("\n")
-      elif room["type"] == "deadend":
-        if   room["orientation"] == 1:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("deadend1 ")
-          else:                   mazeFunctionFile.write("deadend1c ") # (chest)
+      elif type == "end":
+        if   room.getOpening("+x") == True:
+          x = x + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload add ")
           mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(" ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write("\n")
-        elif room["orientation"] == 2:
-          x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("deadend1 ")
-          else:                   mazeFunctionFile.write("deadend1c ") # (chest)
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run place template maze:end1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write(" clockwise_90\n")
-        elif room["orientation"] == 4:
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload remove ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        elif room.getOpening("-x") == True:
+          z = z + 15
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload add ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run place template maze:end1 ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write(" counterclockwise_90\n")
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload remove ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+        elif room.getOpening("+z") == True:
           x = x + 15
           z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("deadend1 ")
-          else:                   mazeFunctionFile.write("deadend1c ") # (chest)
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload add ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run place template maze:end1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write(" 180\n")
-        else: # (8)
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 9 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("deadend1 ")
-          else:                   mazeFunctionFile.write("deadend1c ") # (chest)
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload remove ")
           mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(" ")
           mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" counterclockwise_90\n")
-      elif room["type"] == "turn":
-        if   room["orientation"] == 3:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("turn3 ")
-          else:                   mazeFunctionFile.write("turn3c ") # (chest)
+          mazeFunctionFile.write("\n")
+        elif room.getOpening("-z") == True:
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload add ")
+          mazeFunctionFile.write(str(x))
+          mazeFunctionFile.write(" ")
+          mazeFunctionFile.write(str(z))
+          mazeFunctionFile.write("\n")
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run place template maze:end1 ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write("\n")
-        elif room["orientation"] == 6:
-          x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("turn3 ")
-          else:                   mazeFunctionFile.write("turn3c ") # (chest)
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload remove ")
           mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(" ")
           mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" clockwise_90\n")
-        elif room["orientation"] == 9:
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("turn3 ")
-          else:                   mazeFunctionFile.write("turn3c ") # (chest)
+          mazeFunctionFile.write("\n")
+      else:
+        numOpenings = 0
+        for direction in directions:
+          if room.openings[direction] == True: numOpenings = numOpenings + 1
+        if   numOpenings == 1: # deadend
+          if   room.getOpening("+x") == True:
+            x = x + 15
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if   type == "normal": mazeFunctionFile.write("deadend1 ")
+            elif type == "chest":  mazeFunctionFile.write("deadend1c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write(" clockwise_90\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+          elif room.getOpening("-x") == True:
+            z = z + 15
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if   type == "normal": mazeFunctionFile.write("deadend1 ")
+            elif type == "chest":  mazeFunctionFile.write("deadend1c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write(" counterclockwise_90\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+          elif room.getOpening("+z") == True:
+            x = x + 15
+            z = z + 15
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if   type == "normal": mazeFunctionFile.write("deadend1 ")
+            elif type == "chest":  mazeFunctionFile.write("deadend1c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write(" 180\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+          elif room.getOpening("-z") == True:
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if   type == "normal": mazeFunctionFile.write("deadend1 ")
+            elif type == "chest":  mazeFunctionFile.write("deadend1c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+        elif numOpenings == 2: # hall or turn
+          if room.getOpening("+x") == room.getOpening("-x"): # hall
+            if room.getOpening("+x") == True:
+              z = z + 15
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload add ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run place template maze:")
+              if type == "normal":  mazeFunctionFile.write("hall5 ")
+              elif type == "chest": mazeFunctionFile.write("hall5c ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" 0 ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write(" counterclockwise_90")
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload remove ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+            else:
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload add ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run place template maze:")
+              if type == "normal":  mazeFunctionFile.write("hall5 ")
+              elif type == "chest": mazeFunctionFile.write("hall5c ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" 0 ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload remove ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+          else: # turn
+            if   (room.getOpening("+x") == True) and (room.getOpening("+z") == True):
+              x = x + 15
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload add ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run place template maze:")
+              if   type == "normal": mazeFunctionFile.write("turn3 ")
+              elif type == "chest":  mazeFunctionFile.write("turn3c ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" 0 ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write(" clockwise_90\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload remove ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+            elif (room.getOpening("-x") == True) and (room.getOpening("+z") == True):
+              x = x + 15
+              z = z + 15
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload add ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run place template maze:")
+              if   type == "normal": mazeFunctionFile.write("turn3 ")
+              elif type == "chest":  mazeFunctionFile.write("turn3c ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" 0 ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write(" 180\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload remove ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+            elif (room.getOpening("-x") == True) and (room.getOpening("-z") == True):
+              z = z + 15
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload add ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run place template maze:")
+              if   type == "normal": mazeFunctionFile.write("turn3 ")
+              elif type == "chest":  mazeFunctionFile.write("turn3c ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" 0 ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write(" counterclockwise_90\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload remove ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+            elif (room.getOpening("+x") == True) and (room.getOpening("-z") == True):
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload add ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run place template maze:")
+              if   type == "normal": mazeFunctionFile.write("turn3 ")
+              elif type == "chest":  mazeFunctionFile.write("turn3c ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" 0 ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+              tick = tick + 1
+              mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+              mazeFunctionFile.write(str(tick))
+              mazeFunctionFile.write(" run forceload remove ")
+              mazeFunctionFile.write(str(x))
+              mazeFunctionFile.write(" ")
+              mazeFunctionFile.write(str(z))
+              mazeFunctionFile.write("\n")
+        elif numOpenings == 3: # tee
+          if   room.getOpening("+x") == False:
+            x = x + 15
+            z = z + 15
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if type == "normal":  mazeFunctionFile.write("tee7 ")
+            elif type == "chest": mazeFunctionFile.write("tee7c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write(" 180\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+          elif room.getOpening("-x") == False:
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if type == "normal":  mazeFunctionFile.write("tee7 ")
+            elif type == "chest": mazeFunctionFile.write("tee7c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+          elif room.getOpening("+z") == False:
+            z = z + 15
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if type == "normal":  mazeFunctionFile.write("tee7 ")
+            elif type == "chest": mazeFunctionFile.write("tee7c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write(" counterclockwise_90\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+          elif room.getOpening("-z") == False:
+            x = x + 15
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload add ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run place template maze:")
+            if type == "normal":  mazeFunctionFile.write("tee7 ")
+            elif type == "chest": mazeFunctionFile.write("tee7c ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" 0 ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write(" clockwise_90\n")
+            tick = tick + 1
+            mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+            mazeFunctionFile.write(str(tick))
+            mazeFunctionFile.write(" run forceload remove ")
+            mazeFunctionFile.write(str(x))
+            mazeFunctionFile.write(" ")
+            mazeFunctionFile.write(str(z))
+            mazeFunctionFile.write("\n")
+        elif numOpenings == 4: # cross
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload add ")
           mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(" ")
           mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" counterclockwise_90\n")
-        else: # (12)
-          x = x + 15
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 10 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("turn3 ")
-          else:                   mazeFunctionFile.write("turn3c ") # (chest)
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" 180\n")
-      elif room["type"] == "hall":
-        if   room["orientation"] == 5:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 11 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("hall5 ")
-          else:                   mazeFunctionFile.write("hall5c ") # (chest)
+          mazeFunctionFile.write("\n")
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run place template maze:")
+          if   type == "normal": mazeFunctionFile.write("cross ")
+          elif type == "chest":  mazeFunctionFile.write("crossc ")
           mazeFunctionFile.write(str(x))
           mazeFunctionFile.write(" 0 ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write("\n")
-        else: # (10)
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 11 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("hall5 ")
-          else:                   mazeFunctionFile.write("hall5c ") # (chest)
+          tick = tick + 1
+          mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+          mazeFunctionFile.write(str(tick))
+          mazeFunctionFile.write(" run forceload remove ")
           mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" counterclockwise_90\n")
-      elif room["type"] == "tee":
-        if   room["orientation"] == 7:
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("tee7 ")
-          else:                   mazeFunctionFile.write("tee7c ") # (chest)
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
+          mazeFunctionFile.write(" ")
           mazeFunctionFile.write(str(z))
           mazeFunctionFile.write("\n")
-        elif room["orientation"] == 11:
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("tee7 ")
-          else:                   mazeFunctionFile.write("tee7c ") # (chest)
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" counterclockwise_90\n")
-        elif room["orientation"] == 13:
-          x = x + 15
-          z = z + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("tee7 ")
-          else:                   mazeFunctionFile.write("tee7c ") # (chest)
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" 180\n")
-        else: # (14)
-          x = x + 15
-          mazeFunctionFile.write("execute if score #maze spawntimer matches 12 run place template maze:")
-          if variant == "normal": mazeFunctionFile.write("tee7 ")
-          else:                   mazeFunctionFile.write("tee7c ") # (chest)
-          mazeFunctionFile.write(str(x))
-          mazeFunctionFile.write(" 0 ")
-          mazeFunctionFile.write(str(z))
-          mazeFunctionFile.write(" clockwise_90\n")
-      else: # (cross)
-        mazeFunctionFile.write("execute if score #maze spawntimer matches 13 run place template maze:")
-        if variant == "normal": mazeFunctionFile.write("cross ")
-        else:                   mazeFunctionFile.write("crossc ") # (chest)
-        mazeFunctionFile.write(str(x))
-        mazeFunctionFile.write(" 0 ")
-        mazeFunctionFile.write(str(z))
-        mazeFunctionFile.write("\n")
-    
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 15 run forceload remove all\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run kill @e[name=\"Loading...\"]\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run summon minecraft:armor_stand 24.0 101.25 20.0 {CustomName:'[{\"text\":\"Enter the maze\",\"color\":\"green\"}]',CustomNameVisible:1,Invisible:1,Marker:1,NoGravity:1}\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run fill 23 100 20 24 100 20 air\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run tellraw @a \"Maze loaded, enter when all players have joined\"\n")
-    mazeFunctionFile.write("execute if score #maze spawntimer matches 20 run scoreboard players set #maze gamephase 1\n")
 
-def generateRectangularMaze(width, height):
-  maze = Maze(width,height)
+      tick = tick + 1
 
-  pastPathPoints = set()
+    mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+    mazeFunctionFile.write(str(tick))
+    mazeFunctionFile.write(" run kill @e[name=\"Loading...\"]\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+    mazeFunctionFile.write(str(tick))
+    mazeFunctionFile.write(" run summon minecraft:armor_stand 8.0 101.25 4.0 {CustomName:'[{\"text\":\"Enter the maze\",\"color\":\"green\"}]',CustomNameVisible:1,Invisible:1,Marker:1,NoGravity:1}\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+    mazeFunctionFile.write(str(tick))
+    mazeFunctionFile.write(" run fill 7 100 4 8 100 4 air\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+    mazeFunctionFile.write(str(tick))
+    mazeFunctionFile.write(" run tellraw @a \"Maze loaded, enter when all players have joined\"\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+    mazeFunctionFile.write(str(tick))
+    mazeFunctionFile.write(" run scoreboard players set #maze gamephase 1\n")
 
-  head = copy.deepcopy(maze.start)
-  maze.setValue(head, air)
-  pastPathPoints.add(head)
+def initializeMaze(maze):
+  start = Room(0,0)
 
-  foundEnd = False
-  deadEndsHit = 0
-  while deadEndsHit < density*maze.width*maze.height:
-    possibleNextHeads = set()
-    for direction in directions:
-      look = copy.deepcopy(head)
-      look.move(direction)
-      if maze.getValue(look) == wall: possibleNextHeads.add(look)
+  start.setOpening("+x", True)
+  start.setOpening("-x", True)
+  start.setOpening("+z", True)
+  start.setOpening("-z", True)
+  
+  start.setType("start")
 
-    viableNextHeads = set()
-    for possibleNextHead in possibleNextHeads:
-      numPathNear = 0
-      for direction in directions:
-        look2 = copy.deepcopy(possibleNextHead)
-        look2.move(direction)
-        if maze.getValue(look2) == air: numPathNear = numPathNear + 1
-      if numPathNear == 1: viableNextHeads.add(possibleNextHead)
+  for direction in directions:
+    maze.addOpenTile(start.position["xChunk"], start.position["zChunk"], offset=direction)
 
-    if len(viableNextHeads) == 0:
-      deadEndsHit = deadEndsHit + 1
-      head = random.choice(list(pastPathPoints))
+  maze.addRoom(start)
+
+def generateMaze(mazesize):
+  maze = Maze()
+  initializeMaze(maze)
+
+  numRooms = 1
+  while (numRooms <= mazesize):
+    openTile = maze.chooseRandomOpenTile()
+    if openTile is None: # if the maze closes itself off before reaching the required size, make a new maze
+      maze = Maze()
+      initializeMaze(maze)
+      numRooms = 1
       continue
 
-    head = random.choice(list(viableNextHeads))
-    maze.setValue(head, air)
-    if (head.x < maze.height - 4) and (head.y < maze.height - 4): pastPathPoints.add(head)
+    room = Room(openTile.position["xChunk"], openTile.position["zChunk"])
 
-    if head == maze.end:
-      foundEnd = True
-      head = random.choice(list(pastPathPoints))
+    for direction in directions:
+      if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction) is None:
+        open = random.choices([True, False], wallWeights)[0]
+        if open == True: maze.addOpenTile(room.position["xChunk"], room.position["zChunk"], offset=direction)
+      else:
+        if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).getOpening(direction, opposite=True) == True:
+          open = True
+        else:
+          open = False
+      room.setOpening(direction, open)
 
-  return maze, foundEnd
+    room.setType(random.choices(["normal", "chest"], roomWeights)[0])
+
+    maze.removeOpenTile(room.position["xChunk"], room.position["zChunk"])
+    maze.addRoom(room)
+
+    numRooms = numRooms + 1
+  
+  while True:
+    openTile = maze.chooseRandomOpenTile()
+    if openTile is None:
+      break
+
+    room = Room(openTile.position["xChunk"], openTile.position["zChunk"])
+
+    for direction in directions:
+      if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction) is None:
+        open = False
+      else:
+        if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).getOpening(direction, opposite=True) == True:
+          open = True
+        else:
+          open = False
+      room.setOpening(direction, open)
+    
+    room.setType(random.choices(["normal", "chest"], roomWeights)[0])
+
+    maze.removeOpenTile(room.position["xChunk"], room.position["zChunk"])
+    maze.addRoom(room)
+
+  maze.setFinalRoomToEnd()
+
+  return maze
 
 def main():
   print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
   print("| Welcome to Finn's Minecraft Maze Generator |")
   print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
   while True:
-    mazetype = input("Type of maze (square: 's', rectangle 'r'): ")
-    if (mazetype == "s"):
-      width_str = input("Sidelength: ")
-      while True:
-        try: width = abs(int(width_str))
-        except:
-          print("Sidelength must be an integer value")
-          width_str = input("Sidelength: ")
-        else:
-          height = width
-          break
-      break
-    elif (mazetype == "r"):
-      width_str = input("Width: ")
-      while True:
-        try: width = abs(int(width_str))
-        except:
-          print("Width must be an integer value")
-          width_str = input("Width: ")
-        else: break
-      height_str = input("Height: ")
-      while True:
-        try: height = abs(int(height_str))
-        except:
-          print("Height must be an integer value")
-          height_str = input("Height: ")
-        else: break
-      break
-    else: print("Must put either 's' or 'r'")
+    mazesize_str = input("Maze size: ")
+    try: mazesize = abs(int(mazesize_str))
+    except:
+      print("Maze size must be an integer value")
+      mazesize_str = input("Maze size: ")
+    else: break
 
   print("Generating maze...")
-  while True:
-    maze, foundEnd = generateRectangularMaze(width=width, height=height)
-    if foundEnd: break
+  maze = generateMaze(mazesize)
 
-  maze.draw()
-  maze.encode()
-  sendMazeToMinecraft()
+  sendMazeToMinecraft(maze)
 
   print("Done")
-  print("Copy the mazeworld folder from inside the maze folder to your Minecraft world saves, then enter the world to play.")
-  print("You can also preview the maze by looking at maze.txt in the maze folder.")
+  print("Copy the mazeworld folder to your server folder.")
 
 if __name__ == "__main__": main()

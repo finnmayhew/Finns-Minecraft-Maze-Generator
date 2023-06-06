@@ -2,129 +2,146 @@
 Class definitions
 
 Contains:
-- Point
+- Room
+- OpenTile
 - Maze
 '''
 
-import json
+import random
 
-from config import *
 
-class Point:
+directions = ["+x", "-x", "+z", "-z"]
+
+
+class Room:
   '''
   variables:
-  - x
-  - y
-  
+  - position
+  - openings
+  - type
+
   methods:
-  - move(direction)
+  - setOpening(direction, value)
+  - getOpening(direction)
+  - setType(type)
+  - getType()
+  '''
+  def __init__(self, xChunk, zChunk):
+    self.position = {
+      "xChunk": xChunk,
+      "zChunk": zChunk
+    }
+    self.openings = {}
+    for direction in directions:
+      self.openings[direction] = None
+    self.type = None
+  
+  def setOpening(self, direction, value):
+    self.openings[direction] = value
+
+  def getOpening(self, direction, opposite=False):
+    if opposite == False:
+      return self.openings[direction]
+    else:
+      if   direction == "+x": return self.openings["-x"]
+      elif direction == "-x": return self.openings["+x"]
+      elif direction == "+z": return self.openings["-z"]
+      elif direction == "-z": return self.openings["+z"]
+
+  def setType(self, type):
+    self.type = type
+  
+  def getType(self):
+    return self.type
+
+
+class OpenTile:
+  '''
+  variables:
+  - position
   '''
 
-  def __init__(self, x, y):
-    if (x < 0) or (y < 0): raise Exception("Points must have non-negative coordinates")
-    self.x = x
-    self.y = y
+  def __init__(self, xChunk, zChunk):
+    self.position = {
+      "xChunk": xChunk,
+      "zChunk": zChunk
+    }
 
-  def __eq__(self, other):
-    if isinstance(other, self.__class__): return (self.x == other.x) and (self.y == other.y)
-    return False
-
-  def __hash__(self): return hash((self.x, self.y))
-
-  def __str__(self): return f"({self.x}, {self.y})"
-
-  def move(self, direction):
-    if   direction == 'n': self.x = self.x - 1
-    elif direction == 'e': self.y = self.y + 1
-    elif direction == 's': self.x = self.x + 1
-    elif direction == 'w': self.y = self.y - 1
-    else:                  raise Exception("Direction must be in {n, e, s, w}")
 
 class Maze:
   '''
   variables:
-  - width
-  - height
-  - maze ([i/x/row][j/y/column])
-  - start
-  - end
-  - encodedMaze
-  
+  - rooms
+  - openTiles
+
   methods:
-  - getValue(point)
-  - setValue(point)
-  - draw()
-  - encode()
+  - addRoom(xChunk, zChunk)
+  - getRoom(xChunk, zChunk, offset)
+  - getRooms()
+  - addOpenTile(xChunk, zChunk)
+  - removeOpenTile(xChunk, zChunk)
+  - chooseRandomOpenTile()
+  - setFinalRoomToEnd()
   '''
-  def __init__(self, width, height):
-    self.width       = width
-    self.height      = height
-    self.maze        = [[wall for j in range(width)] for i in range(height)]
-    self.start       = Point(1, 1)
-    self.end         = Point(height - 2, width - 2)
-    self.encodedMaze = dict()
+  def __init__(self):
+    self.rooms = []
+    self.openTiles = set()
 
-    self.maze[0] = [edge for j in range(width)]
-    self.maze[height - 1] = [edge for j in range(width)]
-    for i in range(height):
-      for j in range(width):
-        if (j == 0) or (j == width - 1): self.maze[i][j] = edge
+  def addRoom(self, room):
+    self.rooms.append(room)
 
-  def getValue(self, point):
-    try:    value = self.maze[point.x][point.y]
-    except: return None
-    else:   return value
+  def getRoom(self, xChunk, zChunk, offset=None):
+    for room in self.rooms:
+      if offset is None:
+        if (room.position["xChunk"] == xChunk) and (room.position["zChunk"] == zChunk):
+          return room
+      elif offset == "+x":
+        if (room.position["xChunk"] == xChunk + 1) and (room.position["zChunk"] == zChunk):
+          return room
+      elif offset == "-x":
+        if (room.position["xChunk"] == xChunk - 1) and (room.position["zChunk"] == zChunk):
+          return room
+      elif offset == "+z":
+        if (room.position["xChunk"] == xChunk) and (room.position["zChunk"] == zChunk + 1):
+          return room
+      elif offset == "-z":
+        if (room.position["xChunk"] == xChunk) and (room.position["zChunk"] == zChunk - 1):
+          return room
+    return None
 
-  def setValue(self, point, value):
-    try:    self.maze[point.x][point.y] = value
-    except: print("Cannot set value at", point, "(outside of maze)")
+  def getRooms(self):
+    return self.rooms
 
-  def draw(self):
-    with open("maze/maze.txt", 'w') as mazeImageFile:
-      for row in self.maze:
-        for entry in row:
-          mazeImageFile.writelines(entry)
-        mazeImageFile.write('\n')
+  def addOpenTile(self, xChunk, zChunk, offset=None):
+    if offset == None:
+      self.openTiles.add(OpenTile(xChunk, zChunk))
+    elif offset == "+x":
+      self.openTiles.add(OpenTile(xChunk + 1, zChunk))
+    elif offset == "-x":
+      self.openTiles.add(OpenTile(xChunk - 1, zChunk))
+    elif offset == "+z":
+      self.openTiles.add(OpenTile(xChunk, zChunk + 1))
+    elif offset == "-z":
+      self.openTiles.add(OpenTile(xChunk, zChunk - 1))
 
-  def encode(self):
-    self.encodedMaze = {
-      "width":  self.width,
-      "height": self.height,
-      "rooms":  []
-    }
-    for i in range(self.height):
-      for j in range(self.width):
-        if   (i == self.start.x) and (j == self.start.y):
-          if   self.maze[i+1][j] == wall:                                    self.encodedMaze["rooms"].append(dict(x=i, y=j, type="start",   orientation=2))
-          elif self.maze[i][j+1] == wall:                                    self.encodedMaze["rooms"].append(dict(x=i, y=j, type="start",   orientation=4))
-          else:                                                              self.encodedMaze["rooms"].append(dict(x=i, y=j, type="start",   orientation=6))
-        elif (i == self.end.x)   and (j == self.end.y):
-          if self.maze[i-1][j] == air:                                       self.encodedMaze["rooms"].append(dict(x=i, y=j, type="end",     orientation=1))
-          else:                                                              self.encodedMaze["rooms"].append(dict(x=i, y=j, type="end",     orientation=8))
-        elif self.maze[i][j] == edge:                                        self.encodedMaze["rooms"].append(dict(x=i, y=j, type="edge",    orientation=0))
-        elif self.maze[i][j] == wall:                                        self.encodedMaze["rooms"].append(dict(x=i, y=j, type="wall",    orientation=0))
-        elif self.maze[i][j] == air:
-          nearbyAir = 0
-          for direction in directions:
-            look = Point(i, j)
-            look.move(direction)
-            if self.maze[look.x][look.y] == air: nearbyAir = nearbyAir + 1
-          if   nearbyAir == 1:
-            if   self.maze[i-1][j] == air:                                   self.encodedMaze["rooms"].append(dict(x=i, y=j, type="deadend", orientation=1))
-            elif self.maze[i][j+1] == air:                                   self.encodedMaze["rooms"].append(dict(x=i, y=j, type="deadend", orientation=2))
-            elif self.maze[i+1][j] == air:                                   self.encodedMaze["rooms"].append(dict(x=i, y=j, type="deadend", orientation=4))
-            else:                                                            self.encodedMaze["rooms"].append(dict(x=i, y=j, type="deadend", orientation=8))
-          elif nearbyAir == 2:
-            if   (self.maze[i-1][j] == air) and (self.maze[i][j+1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=3))
-            elif (self.maze[i+1][j] == air) and (self.maze[i][j+1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=6))
-            elif (self.maze[i-1][j] == air) and (self.maze[i][j-1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=9))
-            elif (self.maze[i+1][j] == air) and (self.maze[i][j-1] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="turn",    orientation=12))
-            elif (self.maze[i-1][j] == air) and (self.maze[i+1][j] == air):  self.encodedMaze["rooms"].append(dict(x=i, y=j, type="hall",    orientation=5))
-            else:                                                            self.encodedMaze["rooms"].append(dict(x=i, y=j, type="hall",    orientation=10))
-          elif nearbyAir == 3:
-            if   (self.maze[i][j-1] == wall) or (self.maze[i][j-1] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=7))
-            elif (self.maze[i+1][j] == wall) or (self.maze[i+1][j] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=11))
-            elif (self.maze[i][j+1] == wall) or (self.maze[i][j+1] == edge): self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=13))
-            else:                                                            self.encodedMaze["rooms"].append(dict(x=i, y=j, type="tee",     orientation=14))
-          else:                                                              self.encodedMaze["rooms"].append(dict(x=i, y=j, type="cross",   orientation=15))
-    with open("maze/maze.json", 'w') as mazeJsonFile: json.dump(self.encodedMaze,mazeJsonFile)
+  def removeOpenTile(self, xChunk, zChunk):
+    for openTile in list(self.openTiles):
+      if (openTile.position["xChunk"] == xChunk) and (openTile.position["zChunk"] == zChunk):
+        self.openTiles.remove(openTile)
+
+  def chooseRandomOpenTile(self):
+    if len(list(self.openTiles)) > 0:
+      return random.choice(list(self.openTiles))
+    else:
+      return None
+
+  def setFinalRoomToEnd(self):
+    for room in self.rooms:
+      numOpenings = 0
+      for direction in directions:
+        if room.openings[direction] == True: numOpenings = numOpenings + 1
+      
+      if numOpenings == 1:
+        lastDeadEnd = room
+
+    lastDeadEnd.setType("end")

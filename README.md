@@ -10,9 +10,9 @@ Download this repository, then in a command prompt `cd` to your copy of the repo
 python make_maze.py
 ```
 
-The shell will prompt you to specify the maze size in rooms. Each room is one chunk (16 by 16 blocks).
+The shell will prompt you to specify the maze size in rooms. Each room is one chunk (16 by 16 blocks). There are more config options in `config.py`.
 
-Once the maze is generated, move the folder `maze/mazeworld` to your server folder. When you start the server, the maze will generate. Wait in the lobby until everyone has joined.
+Once the maze is generated, move the `mazeworld` folder to your server folder. When you start the server, the maze will generate. Wait in the lobby until everyone has joined.
 
 ## Gameplay
 
@@ -20,19 +20,7 @@ At the start of the game, every player is given a key item. In order to win, you
 
 There are chests scattered throughout the maze guarded by small parkour challenges. Inside the chests are weapons and armor.
 
-## More info
-
-You can preview a maze outside of Minecraft at `maze/maze.txt`.
-
-In `config.py`, you can configure
-
-- What text characters are used in `maze/maze.txt`
-- How dense the maze is
-- The frequency chest rooms will appear
-
 ## To do
 
-- Playtest
 - Add more room types
 - Upgrade the visuals
-- Add more maze generation algorithms

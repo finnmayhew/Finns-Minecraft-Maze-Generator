@@ -1,21 +1,9 @@
 '''
-Non-command-line config options
-
-Contains:
-- tile characters for maze text file
-- maze density multiplier
-- room variant weights
-- list of possible directions within the maze
+Maze config file
 '''
 
-air  = '█'
-wall = ' '
-edge = '░'
+# Weights for walls generating open or closed, [open, closed]
+wallWeights = [1, 2]
 
-density = 0.2 # any positive number
-roomVariants = {
-    "normal": 17,
-    "chest":  1
-}
-
-directions = {'n', 'e', 's', 'w'}
+# Weights for room types, [normal, chest]
+roomWeights = [10, 1]
