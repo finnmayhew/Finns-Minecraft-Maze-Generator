@@ -32,8 +32,7 @@ class Room:
       "zChunk": zChunk
     }
     self.openings = {}
-    for direction in directions:
-      self.openings[direction] = None
+    for direction in directions: self.openings[direction] = None
     self.type = None
   
   def setOpening(self, direction, value):

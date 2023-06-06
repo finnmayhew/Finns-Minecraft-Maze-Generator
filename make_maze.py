@@ -7,10 +7,10 @@ For other configuration, see `config.py`
 '''
 
 import random
-from math import ceil
 
 from classes import *
 from config import *
+
 
 def sendMazeToMinecraft(maze):
   with open("mazeworld/datapacks/maze/data/maze/functions/make_maze.mcfunction", 'w') as mazeFunctionFile:
@@ -115,6 +115,7 @@ def sendMazeToMinecraft(maze):
     mazeFunctionFile.write(str(tick))
     mazeFunctionFile.write(" run scoreboard players set #maze gamephase 1\n")
 
+
 def initializeMaze(maze):
   start = Room(0,0)
 
@@ -125,10 +126,10 @@ def initializeMaze(maze):
   
   start.setType("start")
 
-  for direction in directions:
-    maze.addOpenTile(start.position["xChunk"], start.position["zChunk"], offset=direction)
+  for direction in directions: maze.addOpenTile(start.position["xChunk"], start.position["zChunk"], offset=direction)
 
   maze.addRoom(start)
+
 
 def generateMaze(mazesize):
   maze = Maze()
@@ -189,16 +190,16 @@ def generateMaze(mazesize):
 
   return maze
 
+
 def main():
   print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
   print("| Welcome to Finn's Minecraft Maze Generator |")
   print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
   while True:
     mazesize_str = input("Maze size: ")
-    try: mazesize = abs(int(mazesize_str))
-    except:
-      print("Maze size must be an integer value")
-    else: break
+    try:    mazesize = abs(int(mazesize_str))
+    except: print("Maze size must be an integer value")
+    else:   break
 
   print("Generating maze...")
   maze = generateMaze(mazesize)
@@ -206,6 +207,7 @@ def main():
   sendMazeToMinecraft(maze)
 
   print("Done")
-  print("Copy the mazeworld folder to your server folder.")
+  print("Copy the mazeworld folder to your server folder")
+
 
 if __name__ == "__main__": main()
