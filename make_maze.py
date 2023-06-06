@@ -664,7 +664,6 @@ def main():
     try: mazesize = abs(int(mazesize_str))
     except:
       print("Maze size must be an integer value")
-      mazesize_str = input("Maze size: ")
     else: break
 
   print("Generating maze...")
