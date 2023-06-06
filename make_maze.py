@@ -138,11 +138,19 @@ def generateMaze(mazesize):
   numRooms = 1
   while (numRooms <= mazesize):
     openTile = maze.chooseRandomOpenTile()
-    if openTile is None: # if the maze closes itself off before reaching the required size, make a new maze
-      maze = Maze()
-      initializeMaze(maze)
-      numRooms = 1
-      continue
+
+    if openTile is None:
+      madeNewOpenTile = False
+      while madeNewOpenTile == False:
+        room = random.choice(maze.getRooms())
+        for direction in directions:
+          if madeNewOpenTile == True: break
+          if room.getOpening(direction) == False:
+            if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction) is None:
+              room.setOpening(direction, True)
+              maze.addOpenTile(room.position["xChunk"], room.position["zChunk"], offset=direction)
+              openTile = maze.chooseRandomOpenTile()
+              madeNewOpenTile = True
 
     room = Room(openTile.position["xChunk"], openTile.position["zChunk"])
 
