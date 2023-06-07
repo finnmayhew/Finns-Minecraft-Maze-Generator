@@ -2,7 +2,7 @@
 
 ## How to use
 
-Play on **Minecraft 1.19.4**.
+Play in **Minecraft 1.20**.
 
 Download this repository, then in a command prompt `cd` to your copy of the repository and run
 
