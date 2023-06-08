@@ -35,8 +35,14 @@ class Room:
     for direction in directions: self.openings[direction] = None
     self.type = None
   
-  def setOpening(self, direction, value):
-    self.openings[direction] = value
+  def setOpening(self, direction, value, opposite=False):
+    if opposite == False:
+      self.openings[direction] = value
+    else:
+      if   direction == "+x": self.openings["-x"] = value
+      elif direction == "-x": self.openings["+x"] = value
+      elif direction == "+z": self.openings["-z"] = value
+      elif direction == "-z": self.openings["+z"] = value
 
   def getOpening(self, direction, opposite=False):
     if opposite == False:

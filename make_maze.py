@@ -176,22 +176,11 @@ def generateMaze(mazesize):
     if openTile is None:
       break
 
-    room = Room(openTile.position["xChunk"], openTile.position["zChunk"])
-
     for direction in directions:
-      if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction) is None:
-        open = False
-      else:
-        if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).getOpening(direction, opposite=True) == True:
-          open = True
-        else:
-          open = False
-      room.setOpening(direction, open)
-    
-    room.setType(random.choices(["normal", "chest"], roomWeights)[0])
+      if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).getOpening(direction, opposite=True) == True:
+        maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).setOpening(direction, False, opposite=True)
 
     maze.removeOpenTile(room.position["xChunk"], room.position["zChunk"])
-    maze.addRoom(room)
 
   maze.setFinalRoomToEnd()
 
