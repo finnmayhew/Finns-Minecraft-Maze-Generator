@@ -209,13 +209,10 @@ def main():
     except: print("Maze size must be an integer value")
     else:   break
 
-  print("Generating maze...")
   maze = generateMaze(mazesize)
-
   sendMazeToMinecraft(maze)
 
-  print("Done")
-  print("Copy the mazeworld folder to your server folder")
+  print("Maze generated, copy the mazeworld folder to your server folder")
 
 
 if __name__ == "__main__": main()
