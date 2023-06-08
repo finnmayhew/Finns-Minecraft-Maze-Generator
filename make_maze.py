@@ -143,14 +143,13 @@ def generateMaze(mazesize):
       madeNewOpenTile = False
       while madeNewOpenTile == False:
         room = random.choice(maze.getRooms())
-        for direction in directions:
-          if madeNewOpenTile == True: break
-          if room.getOpening(direction) == False:
-            if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction) is None:
-              room.setOpening(direction, True)
-              maze.addOpenTile(room.position["xChunk"], room.position["zChunk"], offset=direction)
-              openTile = maze.chooseRandomOpenTile()
-              madeNewOpenTile = True
+        direction = random.choice(directions)
+        if room.getOpening(direction) == False:
+          if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction) is None:
+            room.setOpening(direction, True)
+            maze.addOpenTile(room.position["xChunk"], room.position["zChunk"], offset=direction)
+            openTile = maze.chooseRandomOpenTile()
+            madeNewOpenTile = True
 
     room = Room(openTile.position["xChunk"], openTile.position["zChunk"])
 
