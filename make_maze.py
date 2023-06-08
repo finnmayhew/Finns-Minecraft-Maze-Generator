@@ -177,10 +177,11 @@ def generateMaze(mazesize):
       break
 
     for direction in directions:
-      if maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).getOpening(direction, opposite=True) == True:
-        maze.getRoom(room.position["xChunk"], room.position["zChunk"], offset=direction).setOpening(direction, False, opposite=True)
+      if maze.getRoom(openTile.position["xChunk"], openTile.position["zChunk"], offset=direction) is not None:
+        if maze.getRoom(openTile.position["xChunk"], openTile.position["zChunk"], offset=direction).getOpening(direction, opposite=True) == True:
+          maze.getRoom(openTile.position["xChunk"], openTile.position["zChunk"], offset=direction).setOpening(direction, False, opposite=True)
 
-    maze.removeOpenTile(room.position["xChunk"], room.position["zChunk"])
+    maze.removeOpenTile(openTile.position["xChunk"], openTile.position["zChunk"])
 
   maze.setFinalRoomToEnd()
 
