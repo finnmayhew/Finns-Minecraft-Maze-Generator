@@ -191,9 +191,9 @@ def generateMaze(mazesize):
 
 
 def main():
-  print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
-  print("| Welcome to Finn's Minecraft Maze Generator |")
-  print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
+  print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
+  print("| Welcome to Finn's Minecraft PvP Maze Minigame |")
+  print(" -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --")
   while True:
     mazesize_str = input("Maze size: ")
     try:    mazesize = abs(int(mazesize_str))
