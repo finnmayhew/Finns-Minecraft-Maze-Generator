@@ -4,7 +4,17 @@ execute as @e[type=item,nbt={Item:{tag:{noDespawn:1b}}}] run data merge entity @
 
 effect give @a saturation infinite 0 true
 
-function maze:giveitems
+
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @s wooden_sword 1
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @s shield 1
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @s splash_potion{display:{Name:'{"text":"Speed"}'},CustomPotionEffects:[{Id:1,Duration:200}],CustomPotionColor:8303306} 1
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @s splash_potion{display:{Name:'{"text":"Strength"}'},CustomPotionEffects:[{Id:5,Duration:200}],CustomPotionColor:9839908} 1
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @s splash_potion{display:{Name:'{"text":"Jump"}'},CustomPotionEffects:[{Id:8,Duration:200}],CustomPotionColor:2358349} 1
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @s splash_potion{display:{Name:'{"text":"Invisibility"}'},CustomPotionEffects:[{Id:14,Duration:200}],CustomPotionColor:8488341} 1
+execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run scoreboard players set @s readytogetitems 0
+
+execute as @p[x=7,y=91,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=0}] run scoreboard players set @s readytogetitems 1
+
 
 execute as @a at @s if score @s numkeys = #maze numplayers if block ~ ~-1 ~ glowstone run scoreboard players set @s winner 1
 execute as @p[scores={winner=1}] run scoreboard players set #maze gamephase 4

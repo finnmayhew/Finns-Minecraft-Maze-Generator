@@ -1,6 +1,5 @@
 scoreboard objectives add gamephase dummy
 scoreboard objectives add spawntimer dummy
-scoreboard objectives add starttimer dummy
 scoreboard objectives add numplayers dummy
 scoreboard objectives add readytogetitems dummy
 scoreboard objectives add numkeys dummy "Keys"
