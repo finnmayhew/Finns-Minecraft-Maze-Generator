@@ -1,5 +1,13 @@
 .DS_Store
 __pycache__/
-maze.txt
-maze.json
+
 make_maze.mcfunction
+
+poi/
+stats/
+playerdata/
+mazeworld/data/
+DIM-1/data/
+DIM1/data/
+entities/
+advancements/
