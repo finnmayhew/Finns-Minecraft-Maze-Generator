@@ -80,6 +80,8 @@ def sendMazeToMinecraft(maze):
       mazeFunctionFile.write(template)
       if type == "chest":
         mazeFunctionFile.write("c")
+      if type == "spawner":
+        mazeFunctionFile.write("s")
       mazeFunctionFile.write(" ")
       mazeFunctionFile.write(str(x))
       mazeFunctionFile.write(" 0 ")
@@ -164,7 +166,7 @@ def generateMaze(mazesize):
           open = False
       room.setOpening(direction, open)
 
-    room.setType(random.choices(["normal", "chest"], roomWeights)[0])
+    room.setType(random.choices(["normal", "chest", "spawner"], roomWeights)[0])
 
     maze.removeOpenTile(room.position["xChunk"], room.position["zChunk"])
     maze.addRoom(room)
