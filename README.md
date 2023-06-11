@@ -20,7 +20,7 @@ At the start of the game, every player is given a key item. In order to win, you
 
 There are chests scattered throughout the maze guarded by small parkour challenges. Inside the chests are weapons and armor.
 
-## To do
+## Known issues
 
-- Add more room types
-- Upgrade the visuals
+- Rarely a player will receive double items on drop
+- Keys can despawn if left on the ground too long
