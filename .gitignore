@@ -7,7 +7,8 @@ poi/
 stats/
 playerdata/
 mazeworld/data/
-DIM-1/data/
-DIM1/data/
+mazeworld/DIM-1/data/raids.dat
+mazeworld/DIM1/data/raids_end.dat
 entities/
 advancements/
+mazeworld/level.dat_old
