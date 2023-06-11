@@ -103,6 +103,9 @@ def sendMazeToMinecraft(maze):
 
     mazeFunctionFile.write("execute if score #maze spawntimer matches ")
     mazeFunctionFile.write(str(tick))
+    mazeFunctionFile.write(" run execute as @e[tag=normalspawner] at @s run setblock ~ ~ ~ spawner{SpawnCount:1,SpawnRange:64,Delay:0,MinSpawnDelay:200,MaxSpawnDelay:400,MaxNearbyEntities:20,RequiredPlayerRange:64,SpawnData:{entity:{id:\"minecraft:witch\"}},SpawnPotentials:[{weight:1,data:{entity:{id:\"minecraft:witch\"}}},{weight:15,data:{entity:{id:\"minecraft:zombie\"}}},{weight:5,data:{entity:{id:\"minecraft:evoker\"}}},{weight:10,data:{entity:{id:\"minecraft:creeper\"}}},{weight:1,data:{entity:{id:\"minecraft:blaze\"}}},{weight:5,data:{entity:{id:\"minecraft:enderman\"}}},{weight:15,data:{entity:{id:\"minecraft:spider\"}}},{weight:5,data:{entity:{id:\"minecraft:illusioner\"}}},{weight:7,data:{entity:{id:\"minecraft:vindicator\"}}},{weight:1,data:{entity:{id:\"minecraft:ravager\"}}}]} replace\n")
+    mazeFunctionFile.write("execute if score #maze spawntimer matches ")
+    mazeFunctionFile.write(str(tick))
     mazeFunctionFile.write(" run kill @e[name=\"Loading...\"]\n")
     mazeFunctionFile.write("execute if score #maze spawntimer matches ")
     mazeFunctionFile.write(str(tick))

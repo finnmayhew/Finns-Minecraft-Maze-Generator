@@ -10,4 +10,6 @@ team modify players nametagVisibility hideForOwnTeam
 tellraw @a "One minute until PvP is enabled"
 schedule function maze:enablepvp 60s
 
+function maze:refreshchests
+
 scoreboard players set #maze gamephase 3
