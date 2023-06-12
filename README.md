@@ -23,4 +23,3 @@ There are chests scattered throughout the maze guarded by small parkour challeng
 ## Known issues
 
 - Rarely a player will receive double items on drop
-- Keys can despawn if left on the ground too long
