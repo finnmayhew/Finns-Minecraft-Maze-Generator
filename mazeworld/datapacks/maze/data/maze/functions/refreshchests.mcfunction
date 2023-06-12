@@ -1,4 +1,3 @@
-execute as @e[tag=normalchest] at @s run setblock ~ ~ ~ air replace
-execute as @e[tag=normalchest] at @s run setblock ~ ~ ~ chest{LootTable:"maze:normalchest"} replace
+execute as @e[tag=normalchest] at @s run data modify block ~ ~ ~ LootTable set value "maze:normalchest"
 
-schedule function maze:refreshchests 120s
+schedule function maze:refreshchests 180s
