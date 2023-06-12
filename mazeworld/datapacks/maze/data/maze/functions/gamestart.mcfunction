@@ -13,4 +13,6 @@ schedule function maze:enablepvp 60s
 execute as @e[tag=normalchest] at @s run setblock ~ ~ ~ chest{LootTable:"maze:normalchest"} replace
 function maze:refreshchests
 
+schedule function maze:removebuggedkeys 2t
+
 scoreboard players set #maze gamephase 3

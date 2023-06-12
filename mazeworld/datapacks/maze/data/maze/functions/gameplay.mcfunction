@@ -1,7 +1,5 @@
 execute as @a store result score @s numkeys run clear @s tripwire_hook 0
 
-execute as @e[type=item,nbt={Item:{tag:{noDespawn:1b}}}] run data merge entity @s {Age:-32768}
-
 effect give @a saturation infinite 0 true
 
 
@@ -14,6 +12,7 @@ execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run give @
 execute as @p[x=7,y=94,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=1}] run scoreboard players set @s readytogetitems 0
 
 execute as @p[x=7,y=91,z=7,dx=1,dy=1,dz=1,scores={readytogetitems=0}] run scoreboard players set @s readytogetitems 1
+
 
 execute as @e[type=item,nbt={Item:{id:"minecraft:tripwire_hook"}}] run data merge entity @s {Age:1}
 
