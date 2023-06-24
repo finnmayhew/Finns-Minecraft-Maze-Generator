@@ -6,8 +6,6 @@ Arguments are passed through command-line prompts
 For other configuration, see `config.py`
 '''
 
-import random
-
 from classes import *
 from config import *
 
